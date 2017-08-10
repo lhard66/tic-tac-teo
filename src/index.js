@@ -37,14 +37,18 @@ class Board extends React.Component {
     super();
     this.state = {
       squares: Array(9).fill(null),
+      xIsNext: true,
     }
   }
 
   handleClick(i) {
     // 常量对于引用类型，只是指向其内存地址，地址所对应的内存内容可以改变。
     const squares = this.state.squares.slice();
-    squares[i] = 'X';
-    this.setState({squares});
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.setState({
+      squares,
+      xIsNext: !this.state.xIsNext,
+    });
   }
 
   renderSquare(i) {
@@ -58,7 +62,7 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = 'Next player: X';
+    const status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
 
     return (
       <div>
