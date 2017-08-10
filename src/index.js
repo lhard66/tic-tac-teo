@@ -6,6 +6,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import calculateWinner from './rule';
 
 // class Square extends React.Component {
 //   // constructor() {
@@ -44,6 +45,9 @@ class Board extends React.Component {
   handleClick(i) {
     // 常量对于引用类型，只是指向其内存地址，地址所对应的内存内容可以改变。
     const squares = this.state.squares.slice();
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
     squares[i] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
       squares,
@@ -62,7 +66,13 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
+    const winner = calculateWinner(this.state.squares);
+    let status;
+    if (winner) {
+      status = `Winner : ${winner}`;
+    } else {
+      status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
+    }
 
     return (
       <div>
