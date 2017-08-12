@@ -27,7 +27,11 @@ import calculateWinner from './rule';
 // 若只有render函数，则可以写成如下部分
 function Square(props) {
   return (
-    <button className="square" onClick={() => props.onClick()}>
+    <button 
+      className={props.highlight ? "square emphasize" : "square"}
+      onClick={() => props.onClick()}
+      // style={{color: "red"}}
+    >
       {props.value}
     </button>
   );
@@ -41,6 +45,7 @@ class Board extends React.Component {
         key = {i}
         value = {this.props.squares[i]}
         onClick = {() => this.props.onClick(i)}
+        highlight = {this.props.winnerLine.includes(i)}
       />
       // 此行上面不能加；号，而下面圆括号后需要加；号。
     );
@@ -72,6 +77,7 @@ class Game extends React.Component {
       }],
       stepNumber: 0,
       xIsNext: true,
+      sort: false,
     }
   }
 
@@ -80,7 +86,7 @@ class Game extends React.Component {
     const current = history[history.length - 1];
     // 常量对于引用类型，只是指向其内存地址，地址所对应的内存内容可以改变。
     const squares = current.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
+    if (calculateWinner(squares).winner || squares[i]) {
       return;
     }
     squares[i] = this.state.xIsNext ? 'X' : 'O';
@@ -100,11 +106,24 @@ class Game extends React.Component {
     });
   }
 
-  render() {
-    const history = this.state.history;
-    const current = history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
+  toggleSort() {
+    this.setState({
+      sort: !this.state.sort,
+    });
+  }
 
+  render() {
+    let history = this.state.history;
+    const current = history[this.state.stepNumber];
+    const winner = calculateWinner(current.squares).winner;
+    const winnerLine = calculateWinner(current.squares).line;
+
+    if (this.state.sort) {
+      history = this.state.history.slice(0);
+      console.log(history);
+      history.reverse();
+      console.log(history);
+    }
     const moves = history.map((step, move) => {
       const desc = move ?
         `Move # ${move}` :
@@ -129,10 +148,12 @@ class Game extends React.Component {
           <Board 
             squares={current.squares}
             onClick={(i) => this.handleClick(i)}
+            winnerLine={winnerLine}
           />
         </div>
         <div className="game-info">
           <div>{ status }</div>
+          <button onClick={() => this.toggleSort()}>Sort</button>
           <ol>{ moves }</ol>
         </div>
       </div>

@@ -49,6 +49,7 @@ ol, ul {
   margin-left: 20px;
 }
 
-.current-step a{
+.current-step a,
+.emphasize {
   color: red;
 }
